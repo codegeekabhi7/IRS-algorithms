@@ -1,0 +1,45 @@
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize from
+nltk.stem import WordNetLemmatizer
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('wordnet')
+# define a list of sample texts or database texts =
+[
+ "The quick brown fox jumps over the lazy dog.",
+ "The cat in the hat is a children's book.",
+ "A stitch in time saves nine.",
+ "An apple a day keeps the doctor away.",
+ "Our solar system has eight planets."
+]
+# preprocess the texts
+stop_words = set(stopwords.words('english'))
+lemmatizer = WordNetLemmatizer()
+def preprocess(text):
+ words = word_tokenize(text.lower())
+ words = [w for w in words if w not in stop_words]
+ words = [lemmatizer.lemmatize(w) for w in words]
+ return ' '.join(words)
+processed_texts = [preprocess(text) for text in texts]
+#define a function to answer questions
+def answer_question(question, texts):
+#preprocess the question
+question = preprocess(question)
+#vectorize the texts
+vectorizer =TfidfV ectorizer()
+vectorized_texts = vectorizer.fit_transform(processed_texts)
+# vectorize the question
+vectorized_question = vectorizer.transform([question])
+ 
+# compute cosine similarities between the question and the texts
+similarities = cosine_similarity(vectorized_question, vectorized_texts)
+# find the text with the highest similarity score
+index = similarities.argmax()
+return texts[index]
+# ask a question and get an answer
+question = “what is the cat in the hat?"
+answer = answer_question(question, texts)
+print(answer)
