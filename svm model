@@ -1,0 +1,13 @@
+from sklearn.datasets import fetch_20newsgroups
+categories = ['alt.atheism', 'comp.graphics', 'sci.med', 'soc.religion.christian']
+newsgroups_train = fetch_20newsgroups(subset='train', categories=categories)
+newsgroups_test = fetch_20newsgroups(subset='test', categories=categories)
+from sklearn.feature_extraction.text import CountVectorizer
+vectorizer = CountVectorizer()
+X_train = vectorizer.fit_transform(newsgroups_train.data)
+X_test = vectorizer.transform(newsgroups_test.data)
+from sklearn.svm import LinearSVC
+svm = LinearSVC()
+svm.fit(X_train, newsgroups_train.target)
+y_pred = svm.predict(X_test
+y_pred
