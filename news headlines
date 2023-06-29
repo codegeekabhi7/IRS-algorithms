@@ -1,0 +1,46 @@
+import pandas as pd
+# Read the dataset
+data = pd.read_csv('/content/abcnews_sample.csv')
+data.head()
+# Create a new column containing the length each headline text
+data["headline_text_len"] = data["headline_text"].apply(lambda x : len(x.split()))
+print("The longest headline has: {} words".format(data.headline_text_len.max()))
+     The longest headline has: 13 words
+# Visualize the length distribution
+import seaborn as sns
+import matplotlib.pyplot as plt
+sns.displot(data.headline_text_len, kde=False)
+for idx in data.sample(3).index:
+    headline = data.iloc[idx]
+    print("Headline #{}:".format(idx))
+    print("Publication date: {}".format(headline.publish_date))
+    print("Text: {}\n".format(headline.headline_text))
+     Headline #8352:
+     Publication date: 20031127
+     Text: media threatened in aceh report
+     Headline #5575:
+     Publication date: 20170321
+     Text: indian dance teacher manisha jassal teaches classes community
+     Headline #18326:
+     Publication date: 20060322
+     Text: govt to spend 15b on mental health services
+import warnings
+warnings.filterwarnings("ignore")
+!pip install bertopic
+%%time
+from bertopic import BERTopic
+model = BERTopic(verbose=True,embedding_model='paraphrase-MiniLM-L3-v2', min_topic_size= 7)
+headline_topics, _ = model.fit_transform(data.headline_text)
+freq = model.get_topic_info()
+print("Number of topics: {}".format( len(freq)))
+freq.head()
+a_topic = freq.iloc[1]["Topic"] # Select the 1st topic
+model.get_topic(a_topic) # Show the words and their c-TF-IDF scores
+model.visualize_topics()
+# Select most 3 similar topics
+similar_topics, similarity = model.find_topics("politics", top_n = 3)
+similar_topics
+     [23, 182, 413]
+most_similar = similar_topics[0]
+print("Most Similar Topic Info: \n{}".format(model.get_topic(most_similar)))
+print("Similarity Score: {}".format(similarity[0]))
