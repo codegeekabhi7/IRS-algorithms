@@ -1,0 +1,40 @@
+import nltk
+from nltk.tokenize import sent_tokenize, word_tokenize from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
+from collections import defaultdict
+import string
+nltk.download('stopwords') nltk.download('punkt')
+def textrank_summarize(text, num_sentences=3):
+sentences = sent_tokenize(text)
+words = word_tokenize(text.lower())
+stop_words = set(stopwords.words('english') + list(string.punctuation))
+stemmer = PorterStemmer()
+words = [stemmer.stem(word) for word in words if word not in stop_words]
+frequency = defaultdict(int) for word in words:
+frequency[word] += 1
+max_frequency = max(frequency.values())
+for word in frequency.keys():
+frequency[word] = frequency[word]/max_frequency
+sentence_scores = defaultdict(int) for sentence in sentences:
+for word in sentence_words: if word in frequency.keys():
+sentence_scores[sentence] += frequency[word]
+summary_sentences = sorted(sentence_scores, key=sentence_scores.get,
+reverse=True)[:num_sentences]
+summary = ' '.join(summary_sentences) return summary
+sentence_words = [stemmer.stem(word) for word in word_tokenize(sentence.lower()) if word
+not in stop_words]
+example_text ="I am not a military historian today, but it was the Second World War that first got
+me interested in becoming a historian. When I was a child, I used to sit at the table with my
+grandfather as he told me stories about the war. The son of a Jewish family that had fled Poland, he
+joined the British army when the war started. He wanted to hit back against the Germans who had
+driven his family from their home. What I remember most about Grandpa Dan, aside from his
+medals and memorabilia, was an account of the Battle of Monte Cassino. That was when he, an
+officer leading Polish troops in British uniform, fought alongside an army of Indian, New Zealand,
+French-speaking African, and American soldiers against Germans on top of a mountain in Italy. A
+world war indeed. But in general, we date the beginning of the Second World War to Germany's
+September 1939 invasion of Poland. That attack finally provoked Britain and France, who had
+armies that could actually confront the Axis Powers. Britain and France had been reluctant to
+confront these expansionist states. But Poland had alliances with France, and more recently with
+Britain. So when Germany invaded Poland, the British had to react. So, by late 1939, Britain and
+France (and their colonies) were at war with Germany."
+summary = textrank_summarize (example_text, num_sentences=8) print(summary)
