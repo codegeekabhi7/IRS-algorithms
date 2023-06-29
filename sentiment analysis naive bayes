@@ -1,0 +1,41 @@
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+from nltk.classify import NaiveBayesClassifier
+from nltk.sentiment import SentimentAnalyzer
+from nltk.sentiment.util import *
+
+# Define function to preprocess text
+def preprocess_text(text):
+ # Tokenize the text
+ tokens = word_tokenize(text.lower())
+ # Remove stop words
+ stop_words = set(stopwords.words('english'))
+ filtered_tokens = [token for token in tokens if token not in stop_words]
+ # Lemmatize the tokens
+ lemmatizer = WordNetLemmatizer()
+ lemmatized_tokens = [lemmatizer.lemmatize(token) for token in filtered_tokens]
+ # Return preprocessed text
+ return lemmatized_tokens
+# Define function to extract features from preprocessed text
+def extract_features(text):
+ return dict([(word, True) for word in preprocess_text(text)])
+# Create a sentiment analyzer sa = SentimentAnalyzer()
+# Define the training and testing sets
+pos_data = [(extract_features(nltk.corpus.movie_reviews.raw(fileid)), 'pos') for fileid in nltk.corpus.movie_reviews.fileids('pos')]
+neg_data = [(extract_features(nltk.corpus.movie_reviews.raw(fileid)), 'neg') for fileid in nltk.corpus.movie_reviews.fileids('neg')]
+train_data = pos_data[:800] + neg_data[:800]
+test_data = pos_data[800:] + neg_data[800:]
+# Train a Naive Bayes classifier
+classifier = NaiveBayesClassifier.train(train_data)
+# Evaluate the classifier on the test set
+#accuracy = sa.evaluate(test_data, classifier)[0]['Accuracy']
+#print('Accuracy:', accuracy)
+# Use the classifier to classify new text
+text = "I hate this movie. it is the worst movie ever."
+probs = classifier.prob_classify(extract_features(text))
+if probs.max() == 'pos':
+ print("the text is positive in nature")
+else:
+ print("the text is negative in nature")
